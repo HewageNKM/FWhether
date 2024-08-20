@@ -37,4 +37,24 @@ class WeatherServiceImpl implements WeatherService {
 
     return city ?? "";
   }
+
+  @override
+  String getWeatherAnimation(String condition) {
+    switch (condition) {
+      case "rain":
+        return "assets/rain.json";
+      case "snow":
+        return "assets/snow.json";
+      case "mist":
+        return "assets/mist.json";
+      case "thunderstorm":
+        return "assets/thunderstorm.json";
+      case "clouds":
+        return "assets/clouds.json";
+      case "clear":
+        return "assets/clear.json";
+      default:
+        return condition;
+    }
+  }
 }
