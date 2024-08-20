@@ -80,14 +80,14 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.all(8.0),
             child: OutlinedButton(
               onPressed: searchBtnPressed,
-              child: const Icon(Icons.search),
+              child: const Icon(Icons.search,color: Colors.black),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: OutlinedButton(
               onPressed: fetchWeather,
-              child: const Icon(Icons.location_on),
+              child: const Icon(Icons.location_on,color: Colors.black,),
             ),
           ),
         ],
@@ -118,6 +118,7 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.symmetric(vertical: 50),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -137,9 +138,11 @@ class _HomeState extends State<Home> {
                     ),
                     Column(
                       children: [
-                        Lottie.asset(weatherService.getWeatherAnimation(
-                          _weather!.main.toLowerCase(),
-                        )),
+                        SizedBox(width: 300,
+                          child: Lottie.asset(weatherService.getWeatherAnimation(
+                            _weather!.main.toLowerCase(),
+                          )),
+                        ),
                         Text(
                           _weather!.main,
                           style: const TextStyle(
