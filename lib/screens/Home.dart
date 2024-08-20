@@ -15,101 +15,178 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final WeatherService weatherService = WeatherServiceImpl();
+  TextEditingController? cityController;
   Weather? _weather;
+  bool _isLoading = true;
 
-  //Fetch Weather Data
+  // Fetch Weather Data
   fetchWeather() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       String city = await weatherService.getCurrentCityWeather();
       Weather weather = await weatherService.getWeather(city);
 
       setState(() {
         _weather = weather;
+        _isLoading = false;
       });
     } catch (e) {
       developer.log(e.toString());
     }
   }
 
-  //Fetch data on start
+  // Fetch data on start
   @override
   void initState() {
     super.initState();
+    cityController = TextEditingController();
     fetchWeather();
+  }
+
+  // Fetch weather data by city
+  void searchBtnPressed() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String cityName = cityController?.text ?? "";
+    developer.log(cityName);
+    try {
+      if (cityName.trim().isNotEmpty) {
+        setState(() {
+          _isLoading = true;
+        });
+        Weather weather = await weatherService.getWeather(cityName);
+        developer.log(weather.cityName);
+        setState(() {
+          _weather = weather;
+          _isLoading = false;
+        });
+      } else {
+        fetchWeather();
+      }
+    } catch (e) {
+      developer.log(e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.location_on_outlined,
-                    size: 30,
-                  ),
-                  Text(
-                    _weather?.cityName ?? "City Loading....",
-                    style: const TextStyle(
-                        fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                ],
+      appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: OutlinedButton(
+              onPressed: searchBtnPressed,
+              child: const Icon(Icons.search,color: Colors.black),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: OutlinedButton(
+              onPressed: fetchWeather,
+              child: const Icon(Icons.location_on,color: Colors.black,),
+            ),
+          ),
+        ],
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.black),
+            decoration: const InputDecoration(
+              label: Text(
+                "City",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-              Column(
-                children: [
-                  Lottie.asset(getWeatherAnimation(
-                      _weather?.main.toLowerCase() ?? "clear")),
-                  Text(
-                    _weather?.main ?? "Conditions Loading....",
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _weather?.temperature.toString() ?? "Temp Loading",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 25),
-                  ),
-                  const Text(
-                    " °C",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                  )
-                ],
-              )
-            ],
+            ),
+            maxLines: 1,
+            controller: cityController,
           ),
         ),
+      ),
+      body: Center(
+        child: _isLoading
+            ? const Loading() // Show the loading animation while loading data
+            : Padding(
+                padding: const EdgeInsets.symmetric(vertical: 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 30,
+                        ),
+                        Text(
+                          _weather!.cityName,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(width: 300,
+                          child: Lottie.asset(weatherService.getWeatherAnimation(
+                            _weather!.main.toLowerCase(),
+                          )),
+                        ),
+                        Text(
+                          _weather!.main,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _weather!.temperature.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 25,
+                          ),
+                        ),
+                        const Text(
+                          " °C",
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
       ),
     );
   }
 }
 
-String getWeatherAnimation(String condition) {
-  switch (condition) {
-    case "rain":
-      return "assets/rain.json";
-    case "snow":
-      return "assets/snow.json";
-    case "mist":
-      return "assets/mist.json";
-    case "thunderstorm":
-      return "assets/thunderstorm.json";
-    case "clouds":
-      return "assets/clouds.json";
-    case "clear":
-      return "assets/clear.json";
-    default:
-      return condition;
+class Loading extends StatelessWidget {
+  const Loading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child:
+          Lottie.asset("assets/loading.json"), // Display the loading animation
+    );
   }
 }
