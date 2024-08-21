@@ -74,108 +74,112 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: OutlinedButton(
-              onPressed: searchBtnPressed,
-              child: const Icon(Icons.search,color: Colors.black),
+        appBar: AppBar(
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: OutlinedButton(
+                onPressed: searchBtnPressed,
+                child: const Icon(Icons.search, color: Colors.black),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: OutlinedButton(
-              onPressed: fetchWeather,
-              child: const Icon(Icons.location_on,color: Colors.black,),
-            ),
-          ),
-        ],
-        title: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            cursorColor: Colors.black,
-            style: const TextStyle(color: Colors.black),
-            decoration: const InputDecoration(
-              label: Text(
-                "City",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: OutlinedButton(
+                onPressed: fetchWeather,
+                child: const Icon(
+                  Icons.location_on,
                   color: Colors.black,
                 ),
               ),
             ),
-            maxLines: 1,
-            controller: cityController,
-          ),
-        ),
-      ),
-      body: Center(
-        child: _isLoading
-            ? const Loading() // Show the loading animation while loading data
-            : Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 30,
-                        ),
-                        Text(
-                          _weather!.cityName,
-                          style: const TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(width: 300,
-                          child: Lottie.asset(weatherService.getWeatherAnimation(
-                            _weather!.main.toLowerCase(),
-                          )),
-                        ),
-                        Text(
-                          _weather!.main,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _weather!.temperature.toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 25,
-                          ),
-                        ),
-                        const Text(
-                          " °C",
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+          ],
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              cursorColor: Colors.black,
+              style: const TextStyle(color: Colors.black),
+              decoration: const InputDecoration(
+                label: Text(
+                  "City",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-      ),
-    );
+              maxLines: 1,
+              controller: cityController,
+            ),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: _isLoading
+              ? const Loading() // Show the loading animation while loading data
+              : Padding(
+                padding:const EdgeInsetsDirectional.only(top: 150),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 30,
+                          ),
+                          Text(
+                            _weather!.cityName,
+                            style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(
+                            width: 300,
+                            child:
+                                Lottie.asset(weatherService.getWeatherAnimation(
+                              _weather!.main.toLowerCase(),
+                            )),
+                          ),
+                          Text(
+                            _weather!.main,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _weather!.temperature.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 25,
+                            ),
+                          ),
+                          const Text(
+                            " °C",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+              ),
+        ));
   }
 }
 
@@ -184,9 +188,14 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:
-          Lottie.asset("assets/loading.json"), // Display the loading animation
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Lottie.asset("assets/loading.json"),
+        ],
+      ),
     );
   }
 }
